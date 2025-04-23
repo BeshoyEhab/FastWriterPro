@@ -1,6 +1,3 @@
-#ifndef AUTOCOMPLETEAPP_H
-#define AUTOCOMPLETEAPP_H
-
 #include <QMainWindow>
 #include <QMap>
 #include <QStringList>
@@ -8,7 +5,7 @@
 #include <QPropertyAnimation>
 #include <QGraphicsOpacityEffect>
 #include <QParallelAnimationGroup>
-#include "trie.h"
+#include "../data_model/model.h"
 
 class InputField;
 class QLabel;
@@ -27,11 +24,12 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
 private:
+    Model model;
     InputField *inputField;
     QWidget *suggestionContainer;
     QList<QPushButton *> suggestionButtons;
     int selectedIndex;
-    Trie trie;
+    Trie *trie;
     QLabel *titleLabel;
     QPropertyAnimation *slideAnimation;
     QGraphicsOpacityEffect *opacityEffect;
@@ -57,5 +55,3 @@ private:
 private slots:
     void handleNavigationKeys(QKeyEvent *event);
 };
-
-#endif // AUTOCOMPLETEAPP_H 

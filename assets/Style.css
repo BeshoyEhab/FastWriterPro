@@ -1,0 +1,94 @@
+QMainWindow {
+    background-color: #222222;
+    min-width: 530px;
+    min-height: 300px;
+}
+QTextEdit {
+    margin: 0;
+    padding: 8px 15px;
+    font-size: 18px;
+    border: 2px solid #5f5f5f;
+    border-radius: 22px;
+    color: #dcdcdc;
+    background-color: #515151;
+}
+QTextEdit:focus {
+    margin: 0;
+    padding: 8px 15px;
+    font-size: 18px;
+    border: 2px solid #D2D2D2;
+    border-radius: 22px;
+    color: #ffffff;
+    background-color: #515151;
+}
+QTextEdit[placeholder="true"] {
+    color: #484f58;
+}
+QPushButton {
+    background-color: #262626;
+    color: #9B9B9B;
+    padding: 8px 15px;
+    border: 1px solid #30363d;
+    font-size: 17px;
+    margin: 3;
+    border-radius: 10px;
+    height: 24px;
+}
+QPushButton:hover {
+    background-color: #3F3F3F;
+    color: #D6D6D6;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 2px;
+    font-size: 14px;
+    margin: 3px;
+    min-width: 80px;
+}
+QPushButton[selected="true"] {
+    background-color: #3F3F3F;
+    border: 2px solid #949494;
+}
+QLabel {
+    color: #ffffff;
+    font-size: 32px;
+    font-weight: normal;
+}
+QWidget#suggestionContainer {
+    background-color: #3d3d3d;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 4px 12px;
+    min-height: 36px;
+    min-width:350px
+}
+QWidget#inputContainer {
+    margin: 0;
+    padding: 0;
+}
+QMessageBox{
+    background-color: #0d1117;
+}
+QMessageBox QLabel {
+    color: #ffffff;
+    font-size: 20px;
+
+}
+QMessageBox QPushButton {
+    background-color: #222222;
+    color: #A6A6A6;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    padding: 5px 10px;
+    min-width: 70px;
+}
+QMessageBox QPushButton:hover {
+    border-radius: 5px;
+    border: 1px solid #30363d;
+    background-color: #E2E2E2;
+    color: #000000;
+}

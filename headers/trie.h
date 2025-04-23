@@ -1,24 +1,31 @@
 #include <vector>
 #include <string>
-#include <unordered_map>
 #include <queue>
 #include <nlohmann/json.hpp>
-using json = nlohmann::json;
+#include "trienode.h"
 
-class TrieNode {
-public:
-    std::unordered_map<char, TrieNode*> children;
-    int frequency;
-    TrieNode() : frequency(0) {}
-};
+using json = nlohmann::json;
 
 class Trie {
 private:
     TrieNode* root;
 
     struct Comparator {
-        bool operator()(const std::pair<std::string, int>& a, const std::pair<std::string, int>& b) {
-            return (a.second > b.second) || (a.second == b.second && a.first < b.first);
+        bool useBFS;
+        Comparator(bool bfs) : useBFS(bfs) {}
+        bool operator()(const std::pair<std::string, int> &a, const std::pair<std::string, int> &b)
+        {
+            if (a.second != b.second)
+                return a.second > b.second;
+            else {
+                if (useBFS) {
+                    if (a.first.length() == b.first.length())
+                        return a.first > b.first;
+                    else
+                        return a.first.length() < b.first.length();
+                } else
+                    return a.first < b.first;
+            }
         }
     };
 
@@ -35,5 +42,5 @@ public:
     void makeJson(json& outJson);
     void insert(const std::string& word, int frequency = 1);
     void reset();
-    std::vector<std::string> autoComplete(const std::string& prefix, int max_suggestions = 4);
+    std::vector<std::string> autoComplete(const std::string& prefix, int max_suggestions = 4, bool bfs = false);
 };

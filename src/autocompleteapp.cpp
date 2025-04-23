@@ -1,5 +1,5 @@
-#include "../headers/autocompleteapp.h"
-#include "../headers/inputfield.h"
+#include "autocompleteapp.h"
+#include "inputfield.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -17,104 +17,16 @@ AutoCompleteApp::AutoCompleteApp(QWidget *parent)
     : QMainWindow(parent)
     , selectedIndex(-1)
 {
-    setStyleSheet(R"(
-        QMainWindow {
-            background-color: #222222;
-            min-width: 530px;
-            min-height: 300px;
-        }
-        QTextEdit {
-            margin: 0;
-            padding: 8px 15px;
-            font-size: 18px;
-            border: 2px solid #5f5f5f;
-            border-radius: 22px;
-            color: #dcdcdc;
-            background-color: #515151;
-        }
-        QTextEdit:focus {
-            margin: 0;
-            padding: 8px 15px;
-            font-size: 18px;
-            border: 2px solid #D2D2D2;
-            border-radius: 22px;
-            color: #ffffff;
-            background-color: #515151;
-        }
-        QTextEdit[placeholder="true"] {
-            color: #484f58;
-        }
-        QPushButton {
-            background-color: #262626;
-            color: #9B9B9B;
-            padding: 8px 15px;
-            border: 1px solid #30363d;
-            font-size: 17px;
-            margin: 3;
-            border-radius: 10px;
-            height: 24px;
-        }
-        QPushButton:hover {
-            background-color: #3F3F3F;
-            color: #D6D6D6;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 2px;
-            font-size: 14px;
-            margin: 3px;
-            min-width: 80px;
-        }
-        QPushButton[selected="true"] {
-            background-color: #3F3F3F;
-            border: 2px solid #949494;
-        }
-        QLabel {
-            color: #ffffff;
-            font-size: 32px;
-            font-weight: normal;
-        }
-        QWidget#suggestionContainer {
-            background-color: #3d3d3d;
-            border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
-            border-bottom-left-radius: 0px;
-            border-bottom-right-radius: 0px;
-            margin-left: auto;
-            margin-right: auto;
-            padding: 4px 12px;
-            min-height: 36px;
-            min-width:350px
-        }
-        QWidget#inputContainer {
-            margin: 0;
-            padding: 0;
-        }
-        QMessageBox{
-            background-color: #0d1117;
-        }
-        QMessageBox QLabel {
-            color: #ffffff;
-            font-size: 20px;
-
-        }
-        QMessageBox QPushButton {
-            background-color: #222222;
-            color: #A6A6A6;
-            border: none;
-            border-radius: 5px;
-            font-size: 14px;
-            padding: 5px 10px;
-            min-width: 70px;
-        }
-        QMessageBox QPushButton:hover {
-            border-radius: 5px;
-            border: 1px solid #30363d;
-            background-color: #E2E2E2;
-            color: #000000;
-        }
-
-
-    )");
+    QString baseDir = QCoreApplication::applicationDirPath();
+    QString srcPath = QDir(baseDir + "/../../assets").absolutePath();
+    QFile styleFile(srcPath+"/Style.css");
+    if (styleFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QString styleSheet = QLatin1String(styleFile.readAll());
+        setStyleSheet(styleSheet);
+        styleFile.close();
+    }
+    trie = new Trie;
+    model.loadTrie(trie);
 
     setupUI();
     setupAutocomplete();
@@ -226,25 +138,7 @@ void AutoCompleteApp::setupUI()
 void AutoCompleteApp::setupAutocomplete() {
     QString baseDir = QCoreApplication::applicationDirPath();
     QString assetPath = QDir(baseDir + "/../../assets").absolutePath();
-    loadDictionary(assetPath+"/words_dictionary.json");
-}
-
-void AutoCompleteApp::loadDictionary(const QString& filename) {
-    QFile file(filename);
-    if (!file.open(QIODevice::ReadOnly)) {
-        QMessageBox::critical(this, "Error", "Failed to open dictionary file "+filename);
-        return;
-    }
-
-    try {
-        nlohmann::json data = nlohmann::json::parse(file.readAll().toStdString());
-        for (auto& [word, frequency] : data.items()) {
-            trie.insert(word, frequency);
-        }
-    } catch (const std::exception& e) {
-        QMessageBox::critical(this, "Error",
-                              QString("JSON error: ") + e.what());
-    }
+    model.readJson(assetPath+"/words_dictionary.json");
 }
 
 void AutoCompleteApp::updateInputHeight()
@@ -362,7 +256,7 @@ void AutoCompleteApp::updateSuggestions()
     bool capitalize = currentWord.length() > 0 && currentWord[0].isUpper();
     bool allCaps = currentWord == currentWord.toUpper();
 
-    std::vector<std::string> suggestions = trie.autoComplete(baseWord.toStdString());
+    std::vector<std::string> suggestions = trie->autoComplete(baseWord.toStdString(), 4, true);
     QHBoxLayout *layout = qobject_cast<QHBoxLayout*>(suggestionContainer->layout());
     layout->addStretch();
 
@@ -413,7 +307,7 @@ void AutoCompleteApp::replaceCurrentWord(const QString &replacement)
     cursor.select(QTextCursor::WordUnderCursor);
     cursor.insertText(replacement + " ");
     inputField->setFocus();
-    trie.insert(replacement.toLower().toStdString());
+    trie->insert(replacement.toLower().toStdString());
 }
 
 void AutoCompleteApp::handleNavigationKeys(QKeyEvent *event)
@@ -468,25 +362,9 @@ void AutoCompleteApp::closeEvent(QCloseEvent *event) {
 
 void AutoCompleteApp::saveJson()
 {
-    json data;
-    trie.makeJson(data);
-
     QString baseDir = QCoreApplication::applicationDirPath();
     QString assetPath = QDir(baseDir + "/../../assets").absolutePath();
 
     QString fileName = assetPath + "/words_dictionary.json";
-    QString backUpName = assetPath + "/words_dictionary.backup";
-
-    // Create backup
-    if (QFile::exists(fileName)) {
-        QFile::remove(backUpName);
-        QFile::copy(fileName, backUpName);
-    }
-
-    QFile file(fileName);
-    if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-        std::string jsonStr = data.dump(4); // Pretty print with 4 spaces
-        file.write(jsonStr.c_str(), jsonStr.size());
-        file.close();
-    }
+    model.saveJson(fileName);
 }

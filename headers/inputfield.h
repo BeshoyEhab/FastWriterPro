@@ -1,6 +1,3 @@
-#ifndef INPUTFIELD_H
-#define INPUTFIELD_H
-
 #include <QTextEdit>
 #include <QKeyEvent>
 
@@ -18,5 +15,3 @@ protected:
 private slots:
     void adjustHeight();
 };
-
-#endif // INPUTFIELD_H 

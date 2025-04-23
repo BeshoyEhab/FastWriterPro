@@ -1,5 +1,6 @@
 #include "trie.h"
-#include <QJsonObject>
+#include <QFile>
+#include <QMessageBox>
 
 Trie::Trie() : root(new TrieNode()) {}
 
@@ -14,7 +15,7 @@ void Trie::insert(const std::string& word, int frequency) {
     node->frequency += frequency;
 }
 
-std::vector<std::string> Trie::autoComplete(const std::string& prefix, int max_suggestions) {
+std::vector<std::string> Trie::autoComplete(const std::string& prefix, int max_suggestions, bool bfs) {
     TrieNode* node = root;
     for (char c : prefix) {
         auto it = node->children.find(c);
@@ -22,12 +23,10 @@ std::vector<std::string> Trie::autoComplete(const std::string& prefix, int max_s
         node = it->second;
     }
 
-    std::priority_queue<
-        std::pair<std::string, int>,
-        std::vector<std::pair<std::string, int>>,
-        Comparator
-        > pq;
-
+    std::priority_queue<std::pair<std::string, int>,
+                        std::vector<std::pair<std::string, int>>,
+                        Comparator>
+        pq((Comparator(bfs)));
     std::string currentSuffix;
     collectWords(node, currentSuffix, pq, prefix, max_suggestions);
 
