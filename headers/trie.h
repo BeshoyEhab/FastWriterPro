@@ -10,12 +10,14 @@ class Trie {
 private:
     TrieNode* root;
 
-    struct Comparator {
+    struct Comparator
+    {
         bool useBFS;
-        Comparator(bool bfs) : useBFS(bfs) {}
+        bool noFreq;
+        Comparator(bool bfs, bool nofreq) : useBFS(bfs), noFreq(nofreq) {}
         bool operator()(const std::pair<std::string, int> &a, const std::pair<std::string, int> &b)
         {
-            if (a.second != b.second)
+            if (a.second != b.second && !noFreq)
                 return a.second > b.second;
             else {
                 if (useBFS) {
@@ -42,5 +44,5 @@ public:
     void makeJson(json& outJson);
     void insert(const std::string& word, int frequency = 1);
     void reset();
-    std::vector<std::string> autoComplete(const std::string& prefix, int max_suggestions = 4, bool bfs = false);
+    std::vector<std::string> autoComplete(const std::string& prefix, bool bfs = false, bool nofreq = false, int max_suggestions = 4);
 };

@@ -256,7 +256,7 @@ void AutoCompleteApp::updateSuggestions()
     bool capitalize = currentWord.length() > 0 && currentWord[0].isUpper();
     bool allCaps = currentWord == currentWord.toUpper();
 
-    std::vector<std::string> suggestions = trie->autoComplete(baseWord.toStdString(), 4, true);
+    std::vector<std::string> suggestions = trie->autoComplete(baseWord.toStdString(), true, true);
     QHBoxLayout *layout = qobject_cast<QHBoxLayout*>(suggestionContainer->layout());
     layout->addStretch();
 

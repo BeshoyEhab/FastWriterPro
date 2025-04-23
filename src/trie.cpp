@@ -15,7 +15,7 @@ void Trie::insert(const std::string& word, int frequency) {
     node->frequency += frequency;
 }
 
-std::vector<std::string> Trie::autoComplete(const std::string& prefix, int max_suggestions, bool bfs) {
+std::vector<std::string> Trie::autoComplete(const std::string& prefix, bool bfs, bool nofreq, int max_suggestions) {
     TrieNode* node = root;
     for (char c : prefix) {
         auto it = node->children.find(c);
@@ -26,7 +26,7 @@ std::vector<std::string> Trie::autoComplete(const std::string& prefix, int max_s
     std::priority_queue<std::pair<std::string, int>,
                         std::vector<std::pair<std::string, int>>,
                         Comparator>
-        pq((Comparator(bfs)));
+        pq((Comparator(bfs, nofreq)));
     std::string currentSuffix;
     collectWords(node, currentSuffix, pq, prefix, max_suggestions);
 
