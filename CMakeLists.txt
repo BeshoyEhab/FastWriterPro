@@ -39,7 +39,7 @@ set(HEADERS
 add_executable(FastWriterPro ${SOURCES} ${HEADERS} ${DATA_MODEL}
     assets/words_dictionary.json
     assets/Style.css
-    headers/json.hpp
+    assets/json.hpp
 )
 
 target_link_libraries(FastWriterPro PRIVATE
