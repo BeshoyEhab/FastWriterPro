@@ -41,7 +41,7 @@ void AutoCompleteApp::keyPressEvent(QKeyEvent *event)
 
 void AutoCompleteApp::setupUI()
 {
-    QWidget *centralWidget = new QWidget(this);
+    QWidget *centralWidget = new QWidget();
     QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
     mainLayout->setContentsMargins(0, 0, 0, 0);
     mainLayout->setSpacing(0);
@@ -208,7 +208,7 @@ void AutoCompleteApp::showSuggestions()
         opacityEffect->setOpacity(0.0);
 
         QPropertyAnimation *fadeAnimation = new QPropertyAnimation(opacityEffect, "opacity", this);
-        fadeAnimation->setDuration(150);
+        fadeAnimation->setDuration(1000);
         fadeAnimation->setStartValue(0.0);
         fadeAnimation->setEndValue(1.150);
         fadeAnimation->setEasingCurve(QEasingCurve::OutCubic);
@@ -221,7 +221,7 @@ void AutoCompleteApp::hideSuggestions()
 {
     if (suggestionContainer->isVisible()) {
         QPropertyAnimation *fadeAnimation = new QPropertyAnimation(opacityEffect, "opacity", this);
-        fadeAnimation->setDuration(100);
+        fadeAnimation->setDuration(200);
         fadeAnimation->setStartValue(opacityEffect->opacity());
         fadeAnimation->setEndValue(0.0);
         fadeAnimation->setEasingCurve(QEasingCurve::InCubic);
