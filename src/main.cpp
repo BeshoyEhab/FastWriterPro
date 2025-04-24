@@ -6,7 +6,7 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    Model *model;
+    Model *model = new Model;
     AutoCompleteApp window(model);
     QString baseDir = QCoreApplication::applicationDirPath();
     QString assetPath = QDir(baseDir + "/../../assets").absolutePath();
