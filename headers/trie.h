@@ -15,19 +15,16 @@ private:
         bool useBFS;
         bool noFreq;
         Comparator(bool bfs, bool nofreq) : useBFS(bfs), noFreq(nofreq) {}
-        bool operator()(const std::pair<std::string, int> &a, const std::pair<std::string, int> &b)
-        {
-            if (a.second != b.second && !noFreq)
+        bool operator()(const std::pair<std::string, int> &a, const std::pair<std::string, int> &b) const {
+            if (!noFreq && a.second != b.second)
                 return a.second > b.second;
-            else {
-                if (useBFS) {
-                    if (a.first.length() == b.first.length())
-                        return a.first > b.first;
-                    else
-                        return a.first.length() < b.first.length();
-                } else
-                    return a.first < b.first;
+
+            if (useBFS) {
+                if (a.first.length() != b.first.length())
+                    return a.first.length() < b.first.length();
             }
+
+            return a.first < b.first;
         }
     };
 
