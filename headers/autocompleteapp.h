@@ -14,7 +14,7 @@ class AutoCompleteApp : public QMainWindow {
     Q_OBJECT
 
 public:
-    explicit AutoCompleteApp(QWidget *parent = nullptr);
+    explicit AutoCompleteApp(Model *m, QWidget *parent = nullptr);
 
 signals:
     void suggestionsVisibilityChanged(bool visible);
@@ -24,7 +24,7 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
 private:
-    Model model;
+    Model *model;
     InputField *inputField;
     QWidget *suggestionContainer;
     QList<QPushButton *> suggestionButtons;
@@ -36,7 +36,6 @@ private:
     QParallelAnimationGroup *currentAnimGroup;
 
     void setupUI();
-    void setupAutocomplete();
     void updateInputHeight();
     QString getCurrentWord();
     void clearSelection();

@@ -13,9 +13,10 @@
 #include <QFile>
 #include <QDir>
 
-AutoCompleteApp::AutoCompleteApp(QWidget *parent)
+AutoCompleteApp::AutoCompleteApp(Model *m, QWidget *parent)
     : QMainWindow(parent)
     , selectedIndex(-1)
+    , model(m)
 {
     QString baseDir = QCoreApplication::applicationDirPath();
     QString srcPath = QDir(baseDir + "/../../assets").absolutePath();
@@ -26,10 +27,9 @@ AutoCompleteApp::AutoCompleteApp(QWidget *parent)
         styleFile.close();
     }
     trie = new Trie;
-    model.loadTrie(trie);
+    model->loadTrie(trie);
 
     setupUI();
-    setupAutocomplete();
     resize(800, 600);
     setWindowTitle("Fast Writer Pro");
 }
@@ -133,12 +133,6 @@ void AutoCompleteApp::setupUI()
             this, &AutoCompleteApp::handleNavigationKeys);
     connect(inputField, &QTextEdit::textChanged,
             this, &AutoCompleteApp::updateUI);
-}
-
-void AutoCompleteApp::setupAutocomplete() {
-    QString baseDir = QCoreApplication::applicationDirPath();
-    QString assetPath = QDir(baseDir + "/../../assets").absolutePath();
-    model.readJson(assetPath+"/words_dictionary.json");
 }
 
 void AutoCompleteApp::updateInputHeight()
@@ -366,5 +360,5 @@ void AutoCompleteApp::saveJson()
     QString assetPath = QDir(baseDir + "/../../assets").absolutePath();
 
     QString fileName = assetPath + "/words_dictionary.json";
-    model.saveJson(fileName);
+    model->saveJson(fileName);
 }

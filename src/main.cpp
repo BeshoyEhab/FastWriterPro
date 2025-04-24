@@ -1,11 +1,16 @@
 #include <QApplication>
 #include <QScreen>
+#include <QDir>
 #include "autocompleteapp.h"
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    AutoCompleteApp window;
+    Model *model;
+    AutoCompleteApp window(model);
+    QString baseDir = QCoreApplication::applicationDirPath();
+    QString assetPath = QDir(baseDir + "/../../assets").absolutePath();
+    model->readJson(assetPath+"/words_dictionary.json");
 
     QScreen *screen = QGuiApplication::primaryScreen();
     int screenWidth = screen->size().width();
