@@ -10,6 +10,7 @@ set(CMAKE_AUTOUIC ON)
 
 find_package(Qt6 COMPONENTS Core Gui Widgets REQUIRED)
 
+
 # Add include directories
 include_directories(${CMAKE_SOURCE_DIR}/headers)
 
@@ -38,6 +39,7 @@ set(HEADERS
 add_executable(FastWriterPro ${SOURCES} ${HEADERS} ${DATA_MODEL}
     assets/words_dictionary.json
     assets/Style.css
+    headers/json.hpp
 )
 
 target_link_libraries(FastWriterPro PRIVATE
