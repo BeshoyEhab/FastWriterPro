@@ -13,14 +13,7 @@
 #include <QFile>
 #include <QDir>
 
-<<<<<<< Updated upstream
-AutoCompleteApp::AutoCompleteApp(Model *m, QWidget *parent)
-    : QMainWindow(parent)
-    , selectedIndex(-1)
-    , model(m)
-=======
-AutoCompleteApp::AutoCompleteApp(QWidget *parent): QMainWindow(parent), selectedIndex(-1)
->>>>>>> Stashed changes
+AutoCompleteApp::AutoCompleteApp(Model *m, QWidget *parent): QMainWindow(parent), selectedIndex(-1) , model(m)
 {
     QString baseDir = QCoreApplication::applicationDirPath();
     QString srcPath = QDir(baseDir + "/../../assets").absolutePath();
