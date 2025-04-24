@@ -247,16 +247,16 @@ void AutoCompleteApp::updateSuggestions()
     }
 
     QString currentWord = getCurrentWord();
-    if(currentWord.isEmpty()) {
-        hideSuggestions();
-        return;
-    }
-
     QString baseWord = currentWord.toLower();
     bool capitalize = currentWord.length() > 0 && currentWord[0].isUpper();
     bool allCaps = currentWord == currentWord.toUpper();
 
     std::vector<std::string> suggestions = trie->autoComplete(baseWord.toStdString(), true, true);
+    if(currentWord.isEmpty() || suggestions.empty()) {
+        hideSuggestions();
+        return;
+    }
+
     QHBoxLayout *layout = qobject_cast<QHBoxLayout*>(suggestionContainer->layout());
     layout->addStretch();
 
