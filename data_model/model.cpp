@@ -1,7 +1,7 @@
 #include "model.h"
 #include <QFile>
 #include <QDebug>
-#include <json.hpp>
+#include <../assets/json.hpp>
 
 using json = nlohmann::json;
 Model::Model(){}
