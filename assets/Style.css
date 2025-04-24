@@ -1,7 +1,5 @@
 QMainWindow {
     background-color: #222222;
-    min-width: 530px;
-    min-height: 300px;
 }
 QTextEdit {
     margin: 0;
@@ -21,9 +19,11 @@ QTextEdit:focus {
     color: #ffffff;
     background-color: #515151;
 }
+
 QTextEdit[placeholder="true"] {
     color: #484f58;
 }
+
 QPushButton {
     background-color: #262626;
     color: #9B9B9B;
@@ -62,8 +62,6 @@ QWidget#suggestionContainer {
     margin-left: auto;
     margin-right: auto;
     padding: 4px 12px;
-    min-height: 36px;
-    min-width:350px
 }
 QWidget#inputContainer {
     margin: 0;

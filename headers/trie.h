@@ -1,7 +1,7 @@
 #include <vector>
 #include <string>
 #include <queue>
-#include <../assets/nlohmann/json.hpp>
+#include <../assets/json.hpp>
 #include "trienode.h"
 
 using json = nlohmann::json;
