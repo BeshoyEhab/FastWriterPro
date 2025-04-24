@@ -13,13 +13,18 @@
 #include <QFile>
 #include <QDir>
 
+<<<<<<< Updated upstream
 AutoCompleteApp::AutoCompleteApp(Model *m, QWidget *parent)
     : QMainWindow(parent)
     , selectedIndex(-1)
     , model(m)
+=======
+AutoCompleteApp::AutoCompleteApp(QWidget *parent): QMainWindow(parent), selectedIndex(-1)
+>>>>>>> Stashed changes
 {
     QString baseDir = QCoreApplication::applicationDirPath();
     QString srcPath = QDir(baseDir + "/../../assets").absolutePath();
+
     QFile styleFile(srcPath+"/Style.css");
     if (styleFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QString styleSheet = QLatin1String(styleFile.readAll());
