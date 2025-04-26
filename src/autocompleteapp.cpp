@@ -243,8 +243,8 @@ void AutoCompleteApp::updateSuggestions()
     bool capitalize = currentWord.length() > 0 && currentWord[0].isUpper();
     bool allCaps = currentWord == currentWord.toUpper();
 
-    std::vector<std::string> suggestions = trie->autoComplete(baseWord.toStdString(), true, true);
-    if(currentWord.isEmpty() || suggestions.empty()) {
+    std::vector<std::string> suggestions = trie->autoComplete(baseWord.toStdString());
+    if(currentWord.isEmpty() || suggestions.empty() || currentWord == " ") {
         hideSuggestions();
         return;
     }

@@ -1,3 +1,4 @@
+#pragma once
 #include <QPushButton>
 #include <QPropertyAnimation>
 #include <QEnterEvent>
