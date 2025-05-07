@@ -10,14 +10,15 @@ using json = nlohmann::json;
 class Trie {
 private:
     TrieNode* root;
+    std::unordered_map<std::string, int> newWords;
 
     struct Comparator
     {
         bool useBFS;
-        bool noFreq;
-        Comparator(bool bfs, bool nofreq) : useBFS(bfs), noFreq(nofreq) {}
+        bool useFreq;
+        Comparator(bool bfs, bool usefreq) : useBFS(bfs), useFreq(usefreq) {}
         bool operator()(const std::pair<std::string, int> &a, const std::pair<std::string, int> &b) const {
-            if (!noFreq && a.second != b.second)
+            if (useFreq && a.second != b.second)
                 return a.second > b.second;
 
             if (useBFS) {
@@ -39,6 +40,8 @@ private:
 
 public:
     Trie();
+    bool changed = false;
+    void addNew(std::string s);
     void makeJson(json& outJson);
     void insert(const std::string& word, int frequency = 1);
     void reset();

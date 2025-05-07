@@ -22,9 +22,14 @@ signals:
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;
+    void keyReleaseEvent(QKeyEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
 
 private:
+    bool useBFS = true;
+    int maxSuggestions = 4;
+    bool isBackspace;
+    bool useFreq = true;
     Model *model;
     InputField *inputField;
     QWidget *suggestionContainer;
@@ -54,4 +59,5 @@ private:
 
 private slots:
     void handleNavigationKeys(QKeyEvent *event);
+    void onSettingsChanged(bool bfs, int maxSug, bool useFreq);
 };

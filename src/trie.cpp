@@ -12,10 +12,28 @@ void Trie::insert(const std::string& word, int frequency) {
         }
         node = node->children[c];
     }
+    changed = true;
     node->frequency += frequency;
 }
 
-std::vector<std::string> Trie::autoComplete(const std::string& prefix, bool bfs, bool nofreq, int max_suggestions) {
+void Trie::addNew(std::string s)
+{
+    if (!s.empty()) {
+        if (newWords.count(s) > 0) {
+            if (++newWords[s] >= 3) {
+                changed = true;
+                insert(s, newWords[s]);
+                newWords.erase(s);
+            }
+        } else {
+            newWords[s] = 1;
+        }
+    }
+}
+
+std::vector<std::string> Trie::autoComplete(const std::string& prefix, bool bfs, bool usefreq, int max_suggestions) {
+    if (prefix.empty())
+        return {};
     TrieNode* node = root;
     for (char c : prefix) {
         auto it = node->children.find(c);
@@ -26,11 +44,10 @@ std::vector<std::string> Trie::autoComplete(const std::string& prefix, bool bfs,
     std::priority_queue<std::pair<std::string, int>,
                         std::vector<std::pair<std::string, int>>,
                         Comparator>
-        pq((Comparator(bfs, nofreq)));
+        pq((Comparator(bfs, usefreq)));
     std::string currentSuffix;
     collectWords(node, currentSuffix, pq, prefix, max_suggestions);
 
-    // Extract results in reverse order (min-heap -> descending)
     std::vector<std::string> result;
     while (!pq.empty()) {
         result.insert(result.begin(), pq.top().first);
@@ -53,7 +70,7 @@ void Trie::collectWords(
     if (node->frequency > 0) {
         pq.emplace(prefix + currentSuffix, node->frequency);
         if (pq.size() > max_suggestions) {
-            pq.pop(); // Maintain only top N elements
+            pq.pop();
         }
     }
 

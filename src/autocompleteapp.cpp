@@ -1,4 +1,6 @@
 #include "autocompleteapp.h"
+#include "settingsdialog.h"
+#include <QMenuBar>
 #include "inputfield.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -13,7 +15,14 @@
 #include <QFile>
 #include <QDir>
 
-AutoCompleteApp::AutoCompleteApp(Model *m, QWidget *parent): QMainWindow(parent), selectedIndex(-1) , model(m)
+AutoCompleteApp::AutoCompleteApp(Model *m, QWidget *parent)
+    : QMainWindow(parent)
+    , selectedIndex(-1)
+    , model(m)
+    , isBackspace(false)
+    , useBFS(true)
+    , maxSuggestions(4)
+    , useFreq(true)
 {
     QString baseDir = QCoreApplication::applicationDirPath();
     QString srcPath = QDir(baseDir + "/../../assets").absolutePath();
@@ -32,9 +41,21 @@ AutoCompleteApp::AutoCompleteApp(Model *m, QWidget *parent): QMainWindow(parent)
     setWindowTitle("Fast Writer Pro");
 }
 
-void AutoCompleteApp::keyPressEvent(QKeyEvent *event)
-{
-    handleNavigationKeys(event);
+void AutoCompleteApp::keyPressEvent(QKeyEvent *event) {
+    if (event->key() == Qt::Key_Backspace) {
+        isBackspace = true;
+    } else {
+        handleNavigationKeys(event);
+    }
+    QMainWindow::keyPressEvent(event); // Forward event for text processing
+}
+
+void AutoCompleteApp::keyReleaseEvent(QKeyEvent *event) {
+    if (event->key() == Qt::Key_Backspace) {
+        isBackspace = false;
+        updateUI();
+    }
+    QMainWindow::keyReleaseEvent(event);
 }
 
 void AutoCompleteApp::setupUI()
@@ -122,7 +143,6 @@ void AutoCompleteApp::setupUI()
     // Add stretch after content for vertical centering
     mainLayout->addStretch(1);
 
-    // Update showSuggestions and hideSuggestions methods to handle the spacer
     connect(this, &AutoCompleteApp::suggestionsVisibilityChanged, 
             suggestionsSpacer, &QWidget::setVisible);
 
@@ -131,6 +151,25 @@ void AutoCompleteApp::setupUI()
             this, &AutoCompleteApp::handleNavigationKeys);
     connect(inputField, &QTextEdit::textChanged,
             this, &AutoCompleteApp::updateUI);
+
+    QMenuBar *menuBar = new QMenuBar();
+    QMenu *settingsMenu = menuBar->addMenu("Settings");
+    QAction *prefsAction = settingsMenu->addAction("Preferences...");
+    connect(prefsAction, &QAction::triggered, [this]() {
+        SettingsDialog dlg(this);
+        connect(&dlg, &SettingsDialog::settingsChanged,
+                this, &AutoCompleteApp::onSettingsChanged);
+        dlg.exec();
+    });
+    this->setMenuBar(menuBar);
+}
+
+void AutoCompleteApp::onSettingsChanged(bool bfs, int maxSug, bool usefreq)
+{
+    useBFS = bfs;
+    maxSuggestions = maxSug;
+    useFreq = usefreq;
+    updateSuggestions();
 }
 
 void AutoCompleteApp::updateInputHeight()
@@ -142,8 +181,10 @@ void AutoCompleteApp::updateInputHeight()
 QString AutoCompleteApp::getCurrentWord()
 {
     QTextCursor cursor = inputField->textCursor();
-    cursor.select(QTextCursor::WordUnderCursor);
-    return cursor.selectedText().replace(QRegularExpression("\\W+"), "");
+    QString text = inputField->toPlainText().left(cursor.position());
+    QString trimmed = text.replace(QRegularExpression("\\s+$"), "");
+    QString lastWord = trimmed.section(' ', -1, -1, QString::SectionSkipEmpty);
+    return lastWord;
 }
 
 void AutoCompleteApp::clearSelection()
@@ -189,7 +230,8 @@ void AutoCompleteApp::activateSelected()
 void AutoCompleteApp::updateUI()
 {
     updateInputHeight();
-    updateSuggestions();
+    if (!isBackspace)
+        updateSuggestions();
 }
 
 void AutoCompleteApp::showSuggestions()
@@ -243,8 +285,21 @@ void AutoCompleteApp::updateSuggestions()
     bool capitalize = currentWord.length() > 0 && currentWord[0].isUpper();
     bool allCaps = currentWord == currentWord.toUpper();
 
-    std::vector<std::string> suggestions = trie->autoComplete(baseWord.toStdString());
-    if(currentWord.isEmpty() || suggestions.empty() || currentWord == " ") {
+    QTextCursor cursor = inputField->textCursor();
+    QString text = inputField->toPlainText().left(cursor.position());
+    std::vector<std::string> suggestions = trie->autoComplete(
+        baseWord.toStdString(),
+        useBFS,
+        useFreq,
+        maxSuggestions);
+
+    if (text.endsWith(' ') && suggestions.empty()) {
+        if (!baseWord.isEmpty()) {
+            trie->addNew(baseWord.toStdString());
+        }
+    }
+
+    if (suggestions.empty() || baseWord.isEmpty()) {
         hideSuggestions();
         return;
     }
@@ -330,6 +385,11 @@ void AutoCompleteApp::handleNavigationKeys(QKeyEvent *event)
 
 void AutoCompleteApp::closeEvent(QCloseEvent *event) {
     // Create a message box with custom buttons
+    if (!trie->changed) {
+        event->accept();
+        return;
+    }
+
     QMessageBox msgBox(this);
     msgBox.setWindowTitle("Exit Confirmation");
     msgBox.setText("You have unsaved changes. What would you like to do?");

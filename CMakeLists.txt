@@ -21,6 +21,7 @@ set(SOURCES
     src/hoverablebutton.cpp
     src/trie.cpp
     src/trienode.cpp
+    src/settingsdialog.cpp
 )
 
 set(DATA_MODEL
@@ -34,6 +35,7 @@ set(HEADERS
     headers/hoverablebutton.h
     headers/trie.h
     headers/trienode.h
+    headers/settingsdialog.h
 )
 
 add_executable(FastWriterPro ${SOURCES} ${HEADERS} ${DATA_MODEL}

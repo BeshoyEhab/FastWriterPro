@@ -22,6 +22,7 @@ void Model::readJson(const QString &fileName)
         for (auto &[word, frequency] : jsonData.items()) {
             trie->insert(word, frequency);
         }
+        trie->changed = false;
     } catch (json::exception &e) {
         qCritical() << "Error happen when parseing " << e.what();
     }
