@@ -1,5 +1,7 @@
 QMainWindow {
     background-color: #222222;
+    min-width: 530px;
+    min-height: 300px;
 }
 QTextEdit {
     margin: 0;
@@ -19,17 +21,15 @@ QTextEdit:focus {
     color: #ffffff;
     background-color: #515151;
 }
-
 QTextEdit[placeholder="true"] {
     color: #484f58;
 }
-
 QPushButton {
     background-color: #262626;
     color: #9B9B9B;
     padding: 8px 15px;
     border: 1px solid #30363d;
-    font-size: 17px;
+    font-size: 14px;
     margin: 3;
     border-radius: 10px;
     height: 24px;
@@ -40,13 +40,14 @@ QPushButton:hover {
     padding: 8px 15px;
     border: none;
     border-radius: 2px;
-    font-size: 14px;
+    font-size: 17px;
     margin: 3px;
     min-width: 80px;
 }
 QPushButton[selected="true"] {
     background-color: #3F3F3F;
     border: 2px solid #949494;
+    font-weight:bold;
 }
 QLabel {
     color: #ffffff;
@@ -62,13 +63,15 @@ QWidget#suggestionContainer {
     margin-left: auto;
     margin-right: auto;
     padding: 4px 12px;
+    min-height: 50px;
+    min-width:350px
 }
 QWidget#inputContainer {
     margin: 0;
     padding: 0;
 }
 QMessageBox{
-    background-color: #0d1117;
+    background-color: #131313;
 }
 QMessageBox QLabel {
     color: #ffffff;

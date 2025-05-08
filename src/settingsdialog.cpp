@@ -10,6 +10,7 @@
 SettingsDialog::SettingsDialog(QWidget *parent)
     : QDialog(parent)
 {
+    setWindowTitle("Preferences");
     setupUI();
     searchMethodCombo->setCurrentIndex(0);
     maxSuggestionsSlider->setValue(4);

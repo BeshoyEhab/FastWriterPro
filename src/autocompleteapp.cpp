@@ -213,8 +213,7 @@ void AutoCompleteApp::selectPrevious()
 void AutoCompleteApp::updateSelection()
 {
     for(int i = 0; i < suggestionButtons.size(); i++) {
-        bool selected = (i == selectedIndex);
-        suggestionButtons[i]->setStyleSheet(selected ?
+        suggestionButtons[i]->setStyleSheet((i == selectedIndex) ?
             "background-color: #9d9d9d; color: #ffffff; border-radius: 20px;" :
             "background-color: #21262d; color: rgba(255, 255, 255, 0.9); border-radius: 20px;");
     }
@@ -293,16 +292,17 @@ void AutoCompleteApp::updateSuggestions()
         useFreq,
         maxSuggestions);
 
-    if (text.endsWith(' ') && suggestions.empty()) {
-        if (!baseWord.isEmpty()) {
+    if (text.endsWith(' ')) {
+        if (suggestions.empty() && !baseWord.isEmpty()) {
             trie->addNew(baseWord.toStdString());
         }
-    }
-
-    if (suggestions.empty() || baseWord.isEmpty()) {
+    } else if (baseWord.isEmpty())
         hideSuggestions();
-        return;
-    }
+
+    // if (suggestions.empty() || baseWord.isEmpty()) {
+    //     hideSuggestions();
+    //     return;
+    // }
 
     QHBoxLayout *layout = qobject_cast<QHBoxLayout*>(suggestionContainer->layout());
     layout->addStretch();
