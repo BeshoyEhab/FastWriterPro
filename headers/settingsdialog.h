@@ -1,6 +1,8 @@
 #include <QDialog>
 #include <QSettings>
 #include <QCheckBox>
+#include <QLineEdit>
+#include "trie.h"
 
 class QComboBox;
 class QSlider;
@@ -9,7 +11,7 @@ class QLabel;
 class SettingsDialog : public QDialog {
     Q_OBJECT
 public:
-    explicit SettingsDialog(QWidget *parent = nullptr);
+    explicit SettingsDialog(Trie*, QWidget *parent = nullptr);
     void loadSettings();
     
 signals:
@@ -19,9 +21,15 @@ private slots:
     void onSaveClicked();
     void onResetClicked();
     void onSliderMoved(int value);
+    void onAddClicked();
+    void onDeleteClicked();
 
 private:
     void setupUI();
+    Trie* trie;
+    QLineEdit* wordInput;
+    QPushButton* addButton;
+    QPushButton* deleteButton;
     QComboBox *searchMethodCombo;
     QSlider *maxSuggestionsSlider;
     QLabel *suggestionCountLabel;

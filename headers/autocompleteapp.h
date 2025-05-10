@@ -1,6 +1,5 @@
 #pragma once
 #include <QMainWindow>
-#include <QMap>
 #include <QStringList>
 #include <QPushButton>
 #include <QPropertyAnimation>

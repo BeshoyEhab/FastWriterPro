@@ -1,6 +1,5 @@
 #pragma once
 #include <QPushButton>
-#include <QPropertyAnimation>
 #include <QEnterEvent>
 
 class HoverableButton : public QPushButton {

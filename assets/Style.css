@@ -34,19 +34,17 @@ QPushButton {
     border-radius: 10px;
     height: 24px;
 }
+
 QPushButton:hover {
-    background-color: #3F3F3F;
-    color: #D6D6D6;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 2px;
-    font-size: 17px;
-    margin: 3px;
+    font-size: 14px;
     min-width: 80px;
+    color: white !important
 }
+
 QPushButton[selected="true"] {
-    background-color: #3F3F3F;
-    border: 2px solid #949494;
+    border-radius: 10px;
+    background-color: #bcbcbc;
+    border: 2px solid #151515;
     font-weight:bold;
 }
 QLabel {
@@ -92,4 +90,100 @@ QMessageBox QPushButton:hover {
     border: 1px solid #30363d;
     background-color: #E2E2E2;
     color: #000000;
+}
+
+/* Settings Dialog Specific Styles */
+QDialog {
+    background-color: #2a2a2a;
+    color: #dcdcdc;
+    font-size: 14px;
+}
+
+/* Word Input Field */
+QLineEdit#wordInput {
+    background-color: #383838;
+    color: #ffffff;
+    border: 1px solid #484848;
+    border-radius: 4px;
+    padding: 8px 12px;
+    min-width: 200px;
+}
+
+/* Add/Delete Buttons */
+QPushButton#addButton {
+    background-color: #2e7d32;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    min-width: 90px;
+}
+
+QPushButton#deleteButton {
+    background-color: #ff4444;
+    color: white;
+    border: 1px solid #ff6666;
+}
+
+
+QPushButton#addButton:hover {
+    background-color: #3d8b40; /* Darker green */
+    border: 1px solid #4da64f;
+}
+
+QPushButton#deleteButton:hover {
+    background-color: #ff5555; /* Brighter red */
+    border: 1px solid #ff7777;
+}
+
+/* Combo Box */
+QComboBox {
+    background-color: #383838;
+    color: #ffffff;
+    border: 1px solid #484848;
+    border-radius: 4px;
+    padding: 6px 12px;
+}
+
+QComboBox::drop-down {
+    width: 20px;
+    border-left: 1px solid #484848;
+}
+
+/* Slider */
+QSlider::groove:horizontal {
+    background: #404040;
+    height: 4px;
+    border-radius: 2px;
+}
+
+QSlider::handle:horizontal {
+    background: #787878;
+    width: 14px;
+    height: 14px;
+    margin: -5px 0;
+    border-radius: 7px;
+}
+
+/* Max Suggestions label size */
+QLabel[sliderLabel="true"] {
+    font-size: 14px; /* Slightly larger */
+    color: #c0c0c0; /* Brighter text */
+    margin-bottom: 2px;
+}
+
+QLabel#suggestionCountLabel {
+    min-width: 32px; /* Increased from 28px */
+    margin-left: -6px; /* Better alignment */
+    padding-right: 6px; /* More space for numbers */
+    font-size: 13px;
+}
+
+/* Section Spacing */
+QVBoxLayout {
+    spacing: 12px;
+}
+
+QHBoxLayout {
+    spacing: 8px;
 }

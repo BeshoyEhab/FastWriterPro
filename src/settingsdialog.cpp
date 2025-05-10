@@ -1,14 +1,13 @@
 #include "settingsdialog.h"
-#include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QComboBox>
 #include <QSlider>
 #include <QLabel>
 #include <QPushButton>
-#include <QToolTip>
+#include <QMessageBox>
 
-SettingsDialog::SettingsDialog(QWidget *parent)
-    : QDialog(parent)
+SettingsDialog::SettingsDialog(Trie* t,QWidget *parent)
+    : QDialog(parent), trie(t)
 {
     setWindowTitle("Preferences");
     setupUI();
@@ -39,6 +38,7 @@ void SettingsDialog::setupUI() {
     // Suggestions Slider
     QHBoxLayout *sliderLayout = new QHBoxLayout();
     QLabel *sliderLabel = new QLabel("Max Suggestions:");
+    sliderLabel->setProperty("sliderLabel", true);
     maxSuggestionsSlider = new QSlider(Qt::Horizontal);
     maxSuggestionsSlider->setRange(1, 10);
     maxSuggestionsSlider->setValue(4);
@@ -53,6 +53,18 @@ void SettingsDialog::setupUI() {
     sliderLayout->addWidget(suggestionCountLabel);
     mainLayout->addLayout(sliderLayout);
 
+    QHBoxLayout* wordLayout = new QHBoxLayout();
+    wordInput = new QLineEdit();
+    wordInput->setPlaceholderText("Enter word");
+
+    addButton = new QPushButton("Add Word");
+    deleteButton = new QPushButton("Delete Word");
+
+    wordLayout->addWidget(wordInput);
+    wordLayout->addWidget(addButton);
+    wordLayout->addWidget(deleteButton);
+
+    mainLayout->insertLayout(2, wordLayout);
 
     // Buttons
     QHBoxLayout *buttonLayout = new QHBoxLayout();
@@ -62,6 +74,8 @@ void SettingsDialog::setupUI() {
     connect(maxSuggestionsSlider, &QSlider::valueChanged, this, &SettingsDialog::onSliderMoved);
     connect(saveButton, &QPushButton::clicked, this, &SettingsDialog::onSaveClicked);
     connect(resetButton, &QPushButton::clicked, this, &SettingsDialog::onResetClicked);
+    connect(addButton, &QPushButton::clicked, this, &SettingsDialog::onAddClicked);
+    connect(deleteButton, &QPushButton::clicked, this, &SettingsDialog::onDeleteClicked);
 
     buttonLayout->addWidget(resetButton);
     buttonLayout->addWidget(saveButton);
@@ -93,4 +107,28 @@ void SettingsDialog::onResetClicked() {
 
 void SettingsDialog::onSliderMoved(int value) {
     suggestionCountLabel->setText(QString::number(value));
+}
+
+void SettingsDialog::onAddClicked() {
+    QString word = wordInput->text().trimmed().toLower();
+    if(word.isEmpty() || word.contains(' ')) {
+        QMessageBox::warning(this, "Invalid Input", "Please enter a valid word");
+        return;
+    }
+
+    trie->insert(word.toStdString());
+    wordInput->clear();
+}
+
+void SettingsDialog::onDeleteClicked() {
+    QString word = wordInput->text().trimmed().toLower();
+    if(word.isEmpty() || word.contains(' ')) {
+        QMessageBox::warning(this, "Invalid Input", "Please enter a valid word");
+        return;
+    }
+
+    if(!trie->remove(word.toStdString())) {
+        QMessageBox::information(this, "Not Found", "Word not found in dictionary");
+    }
+    wordInput->clear();
 }

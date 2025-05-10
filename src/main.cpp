@@ -9,8 +9,12 @@ int main(int argc, char *argv[])
     Model *model = new Model;
     AutoCompleteApp window(model);
     QString baseDir = QCoreApplication::applicationDirPath();
-    QString assetPath = QDir(baseDir + "/../../assets").absolutePath();
-    model->readJson(assetPath+"/words_dictionary.json");
+    QString assetPath = QDir(baseDir + "/../assets").absolutePath();
+    QString assetsPath = QDir(baseDir + "/../../assets").absolutePath();
+    if (!QFile::exists(assetPath+"/words_dictionary.json"))
+        model->readJson(assetsPath+"/words_dictionary.json");
+    else
+        model->readJson(assetPath+"/words_dictionary.json");
 
     QScreen *screen = QGuiApplication::primaryScreen();
     int screenWidth = screen->size().width();

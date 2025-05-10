@@ -41,9 +41,11 @@ private:
 public:
     Trie();
     bool changed = false;
+    bool contain(const std::string& s);
     void addNew(std::string s);
     void makeJson(json& outJson);
     void insert(const std::string& word, int frequency = 1);
     void reset();
+    bool remove(const std::string &word);
     std::vector<std::string> autoComplete(const std::string& prefix, bool bfs = false, bool nofreq = false, int max_suggestions = 4);
 };

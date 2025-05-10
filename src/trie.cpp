@@ -1,5 +1,4 @@
 #include "trie.h"
-#include <QFile>
 #include <QMessageBox>
 
 Trie::Trie() : root(new TrieNode()) {}
@@ -16,19 +15,32 @@ void Trie::insert(const std::string& word, int frequency) {
     node->frequency += frequency;
 }
 
+bool Trie::contain(const std::string& s)
+{
+    TrieNode* node = root;
+    for (char c : s)
+    {
+        if (!node->children.count(c))
+            return false;
+        node = node->children[c];
+    }
+    return node->frequency > 0;
+}
+
 void Trie::addNew(std::string s)
 {
-    if (!s.empty()) {
-        if (newWords.count(s) > 0) {
-            if (++newWords[s] >= 3) {
-                changed = true;
-                insert(s, newWords[s]);
-                newWords.erase(s);
-            }
-        } else {
-            newWords[s] = 1;
+    if (s.empty())
+        return;
+    if (contain(s))
+        insert(s);
+    else if (newWords.count(s) > 0) {
+        if (++newWords[s] >= 3) {
+            changed = true;
+            insert(s, newWords[s]);
+            newWords.erase(s);
         }
-    }
+    } else
+        newWords[s] = 1;
 }
 
 std::vector<std::string> Trie::autoComplete(const std::string& prefix, bool bfs, bool usefreq, int max_suggestions) {
@@ -99,6 +111,19 @@ void Trie::collectJsonEntries(TrieNode *node, std::string &currentWord, json& j)
         collectJsonEntries(pair.second, currentWord, j);
         currentWord.pop_back();
     }
+}
+
+bool Trie::remove(const std::string& word)
+{
+    TrieNode* node = root;
+    for (char c : word)
+    {
+        if (!node->children.count(c))
+            return false;
+        node = node->children[c];
+    }
+    node->frequency = 0;
+    return true;
 }
 
 void Trie::reset()

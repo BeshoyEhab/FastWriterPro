@@ -2,7 +2,6 @@
 #include "settingsdialog.h"
 #include <QMenuBar>
 #include "inputfield.h"
-#include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QRegularExpression>
@@ -12,7 +11,6 @@
 #include <QEasingCurve>
 #include <QGraphicsOpacityEffect>
 #include <QMessageBox>
-#include <QFile>
 #include <QDir>
 
 AutoCompleteApp::AutoCompleteApp(Model *m, QWidget *parent)
@@ -25,9 +23,16 @@ AutoCompleteApp::AutoCompleteApp(Model *m, QWidget *parent)
     , useFreq(true)
 {
     QString baseDir = QCoreApplication::applicationDirPath();
-    QString srcPath = QDir(baseDir + "/../../assets").absolutePath();
+    QString assetPath = QDir(baseDir + "/../assets").absolutePath();
+    QString assetsPath = QDir(assetPath + "/../../assets").absolutePath();
 
-    QFile styleFile(srcPath+"/Style.css");
+    QFile styleFile;
+    if (QFile::exists(assetPath + "/Style.css")) {
+        styleFile.setFileName(assetPath + "/Style.css");
+    } else {
+        styleFile.setFileName(assetsPath + "/Style.css");
+    }
+
     if (styleFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QString styleSheet = QLatin1String(styleFile.readAll());
         setStyleSheet(styleSheet);
@@ -47,7 +52,7 @@ void AutoCompleteApp::keyPressEvent(QKeyEvent *event) {
     } else {
         handleNavigationKeys(event);
     }
-    QMainWindow::keyPressEvent(event); // Forward event for text processing
+    QMainWindow::keyPressEvent(event);
 }
 
 void AutoCompleteApp::keyReleaseEvent(QKeyEvent *event) {
@@ -156,7 +161,7 @@ void AutoCompleteApp::setupUI()
     QMenu *settingsMenu = menuBar->addMenu("Settings");
     QAction *prefsAction = settingsMenu->addAction("Preferences...");
     connect(prefsAction, &QAction::triggered, [this]() {
-        SettingsDialog dlg(this);
+        SettingsDialog dlg(trie, this);
         connect(&dlg, &SettingsDialog::settingsChanged,
                 this, &AutoCompleteApp::onSettingsChanged);
         dlg.exec();
@@ -264,7 +269,7 @@ void AutoCompleteApp::hideSuggestions()
             emit suggestionsVisibilityChanged(false);
             fadeAnimation->deleteLater();
         });
-        
+
         fadeAnimation->start();
     }
 }
@@ -279,30 +284,24 @@ void AutoCompleteApp::updateSuggestions()
         delete child;
     }
 
+    if (inputField->toPlainText().endsWith(' ')) {
+        return;
+    }
+    if (inputField->toPlainText().isEmpty()) {
+        hideSuggestions();
+        return;
+    }
+
     QString currentWord = getCurrentWord();
     QString baseWord = currentWord.toLower();
     bool capitalize = currentWord.length() > 0 && currentWord[0].isUpper();
     bool allCaps = currentWord == currentWord.toUpper();
 
-    QTextCursor cursor = inputField->textCursor();
-    QString text = inputField->toPlainText().left(cursor.position());
     std::vector<std::string> suggestions = trie->autoComplete(
         baseWord.toStdString(),
         useBFS,
         useFreq,
         maxSuggestions);
-
-    if (text.endsWith(' ')) {
-        if (suggestions.empty() && !baseWord.isEmpty()) {
-            trie->addNew(baseWord.toStdString());
-        }
-    } else if (baseWord.isEmpty())
-        hideSuggestions();
-
-    // if (suggestions.empty() || baseWord.isEmpty()) {
-    //     hideSuggestions();
-    //     return;
-    // }
 
     QHBoxLayout *layout = qobject_cast<QHBoxLayout*>(suggestionContainer->layout());
     layout->addStretch();
@@ -359,8 +358,14 @@ void AutoCompleteApp::replaceCurrentWord(const QString &replacement)
 
 void AutoCompleteApp::handleNavigationKeys(QKeyEvent *event)
 {
-    if (suggestionButtons.isEmpty()) {
-        event->ignore();
+    if (suggestionButtons.isEmpty())
+    {
+        if (event->key() == Qt::Key_Space && !getCurrentWord().isEmpty())
+        {
+            trie->addNew(getCurrentWord().toLower().toStdString());
+            event->accept();
+        } else
+            event->ignore();
         return;
     }
 
@@ -378,6 +383,8 @@ void AutoCompleteApp::handleNavigationKeys(QKeyEvent *event)
         activateSelected();
         event->accept();
         break;
+    case Qt::Key_Space:
+        trie->addNew(getCurrentWord().toLower().toStdString());
     default:
         event->ignore();
     }

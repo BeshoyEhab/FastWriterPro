@@ -1,5 +1,5 @@
 #include "hoverablebutton.h"
-#include <QEvent>
+#include <QPropertyAnimation>
 #include <QEnterEvent>
 
 HoverableButton::HoverableButton(const QString &text, QWidget *parent)

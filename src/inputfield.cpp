@@ -6,9 +6,9 @@ InputField::InputField(QWidget *parent) : QTextEdit(parent)
 {
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setLineWrapMode(QTextEdit::NoWrap);
+    setLineWrapMode(QTextEdit::WidgetWidth);
     setAcceptRichText(false);
-    setWordWrapMode(QTextOption::NoWrap);
+    setWordWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
 
     // Make it start as a single line
     QFontMetrics fm(font());
@@ -36,6 +36,11 @@ void InputField::keyPressEvent(QKeyEvent *event)
             QTextEdit::keyPressEvent(event);
         }
         return;
+    }
+
+    if (event->key() == Qt::Key_Space)
+    {
+        emit navigationKeyPressed(event);
     }
 
     QTextEdit::keyPressEvent(event);
