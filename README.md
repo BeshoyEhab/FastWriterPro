@@ -2,8 +2,6 @@
 
 A modern, intelligent text editor with powerful autocomplete functionality, built with Qt.
 
-![FastWriterPro](https://via.placeholder.com/800x450?text=FastWriterPro+Screenshot)
-
 ## Features
 
 - **Smart Autocomplete**: Suggestions appear as you type, adapting to your writing style
