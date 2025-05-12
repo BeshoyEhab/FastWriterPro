@@ -13,9 +13,9 @@ class SettingsDialog : public QDialog {
 public:
     explicit SettingsDialog(Trie*, QWidget *parent = nullptr);
     void loadSettings();
-    
+
 signals:
-    void settingsChanged(bool bfs, int maxSuggestions, bool useFreq);
+    void settingsChanged(bool bfs, int maxSuggestions, bool useFreq, bool highlightFirst);
 
 private slots:
     void onSaveClicked();
@@ -34,5 +34,6 @@ private:
     QSlider *maxSuggestionsSlider;
     QLabel *suggestionCountLabel;
     QCheckBox *freq;
+    QCheckBox *highlight;
     QSettings settings;
 };

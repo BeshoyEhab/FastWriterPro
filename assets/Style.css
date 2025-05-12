@@ -33,23 +33,26 @@ QPushButton {
     margin: 3;
     border-radius: 10px;
     height: 24px;
+    min-width: 30px
 }
-
 QPushButton:hover {
-    font-size: 14px;
+    background-color: #bcbcbc;
+    color: #151515;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 10px;
+    font-size: 17px;
+    margin: 3px;
     min-width: 80px;
-    color: white !important
 }
-
 QPushButton[selected="true"] {
     border-radius: 10px;
     background-color: #bcbcbc;
     border: 2px solid #151515;
-    font-weight:bold;
 }
 QLabel {
     color: #ffffff;
-    font-size: 32px;
+    font-size: 30px;
     font-weight: normal;
 }
 QWidget#suggestionContainer {
@@ -83,7 +86,7 @@ QMessageBox QPushButton {
     border-radius: 5px;
     font-size: 14px;
     padding: 5px 10px;
-    min-width: 70px;
+    min-width: 80px;
 }
 QMessageBox QPushButton:hover {
     border-radius: 5px;
@@ -92,98 +95,182 @@ QMessageBox QPushButton:hover {
     color: #000000;
 }
 
-/* Settings Dialog Specific Styles */
-QDialog {
-    background-color: #2a2a2a;
+/*=========================================================*/
+
+QMenuBar {
+    background-color: #222222;
+    color: white;
+    padding: 4px;
+}
+
+QMenuBar::item {
+
+    background: #1e1e1e;
+    padding: 4px 12px;
+    margin: 0 2px;
+}
+
+QMenuBar::item:selected {
+    background: #131313;
+    border-radius: 6px;
+}
+
+QMenu {
+    background-color: #2b2b2b;
+    color: white;
+    border: 1px solid #444;
+    border-radius: 6px;
+}
+
+QMenu::item {
+    background-color: transparent;
+    color: white;
+    padding: 6px 20px;
+}
+
+QMenu::item:selected {
+    background-color: #3a3a3a;
+    color: white;
+}
+
+/*=========================================================*/
+
+QDialog#settingsDialog {
+    background-color: #131313;
+    color: #ffffff;
+    border-radius: 10px;
+    padding: 12px;
+    min-width: 400px;
+}
+
+/* Labels inside the dialog */
+QDialog#settingsDialog QLabel {
+    font-size: 14px;
+    color: #dcdcdc;
+}
+
+QDialog#settingsDialog QPushButton {
+    background-color: #303030;
+    color: #dcdcdc;
+    border: 1px solid #5f5f5f;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 15px;
+    min-width: 20px;
+}
+
+QDialog#settingsDialog QPushButton:hover {
+    background-color: #cfcfcf;
+    color: #151515;
+    border: none;
+}
+
+QDialog#settingsDialog QLineEdit {
+    background-color: #2e2e2e;
+    border: 1px solid #5f5f5f;
+    color: #dcdcdc;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+
+/*==========================*/
+
+/* ===== ComboBox & Dropdown Styling ===== */
+QDialog#settingsDialog QComboBox {
+    background-color: #3d3d3d;
+    color: #ffffff;
+    border: 1px solid #5f5f5f;
+    border-radius: 8px;
+    padding: 5px 15px 5px 10px;
+}
+
+/* Dropdown list container */
+QDialog#settingsDialog QComboBox QAbstractItemView {
+    background-color: #313131;
+    color: #ffffff;
+    border: 1px solid #5f5f5f;
+    border-radius: 8px;  /* Container rounded corners */
+    margin: 4px;  /* Creates spacing for item radius */
+}
+
+/* Individual items */
+QDialog#settingsDialog QComboBox QAbstractItemView::item {
+    background-color: #313131;
+    color: #ffffff;
+    border-radius: 6px;
+    margin: 2px 4px;
+}
+
+/* Selected item */
+QDialog#settingsDialog QComboBox QAbstractItemView::item:selected {
+    background-color: #b6b6b6;
+    border-radius: 6px;
+}
+
+/* Dropdown arrow section */
+QDialog#settingsDialog QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: center right;
+    width: 25px;
+    border-left: 1px solid #5f5f5f;
+    border-radius: 0 8px 8px 0;
+}
+
+/*==========================*/
+
+QDialog#settingsDialog QCheckBox {
     color: #dcdcdc;
     font-size: 14px;
 }
 
-/* Word Input Field */
-QLineEdit#wordInput {
-    background-color: #383838;
-    color: #ffffff;
-    border: 1px solid #484848;
-    border-radius: 4px;
-    padding: 8px 12px;
-    min-width: 200px;
-}
-
-/* Add/Delete Buttons */
-QPushButton#addButton {
-    background-color: #2e7d32;
-    color: white;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    min-width: 90px;
-}
-
-QPushButton#deleteButton {
-    background-color: #ff4444;
-    color: white;
-    border: 1px solid #ff6666;
-}
-
-
-QPushButton#addButton:hover {
-    background-color: #3d8b40; /* Darker green */
-    border: 1px solid #4da64f;
-}
-
-QPushButton#deleteButton:hover {
-    background-color: #ff5555; /* Brighter red */
-    border: 1px solid #ff7777;
-}
-
-/* Combo Box */
-QComboBox {
-    background-color: #383838;
-    color: #ffffff;
-    border: 1px solid #484848;
-    border-radius: 4px;
-    padding: 6px 12px;
-}
-
-QComboBox::drop-down {
-    width: 20px;
-    border-left: 1px solid #484848;
-}
-
-/* Slider */
-QSlider::groove:horizontal {
-    background: #404040;
-    height: 4px;
-    border-radius: 2px;
-}
-
-QSlider::handle:horizontal {
-    background: #787878;
-    width: 14px;
-    height: 14px;
-    margin: -5px 0;
+QDialog#settingsDialog QCheckBox::indicator:checked {
+    background-color: #7dec4d;
+    border: 1px solid #30363d;
     border-radius: 7px;
 }
 
-/* Max Suggestions label size */
-QLabel[sliderLabel="true"] {
-    font-size: 14px; /* Slightly larger */
-    color: #c0c0c0; /* Brighter text */
-    margin-bottom: 2px;
+QDialog#settingsDialog QCheckBox::indicator:unchecked {
+    background-color: #ff3131;
+    border: 1px solid #5f5f5f;
+    border-radius: 7px;
 }
 
-QLabel#suggestionCountLabel {
-    min-width: 32px; /* Increased from 28px */
-    margin-left: -6px; /* Better alignment */
-    padding-right: 6px; /* More space for numbers */
-    font-size: 13px;
+/*==========================*/
+
+QDialog#settingsDialog QPushButton#deleteButton {
+    background-color: #782b2c;
+    color: #ffffff;
+    font-weight: bold;
+    border: 1px solid #782b2c;
 }
 
-/* Section Spacing */
-QVBoxLayout {
-    spacing: 12px;
+QDialog#settingsDialog QPushButton#deleteButton:hover {
+    background-color: #ae3335;
+    color: #ffffff;
+    font-weight: bold;
+    border: 1px solid #8a1c1c;
 }
 
-QHBoxLayout {
-    spacing: 8px;
+QDialog#settingsDialog QPushButton#deleteButton:pressed {
+    background-color: #8a1c1c;
+}
+
+/*-----------------------------*/
+
+QDialog#settingsDialog QPushButton#AddButton {
+    background-color: #2b782c;
+    color: #ffffff;
+    border: 1px solid #034f00;
+}
+
+QDialog#settingsDialog QPushButton#AddButton:hover {
+    background-color: #33ae35;
+    color: #ffffff;
+    border: 1px solid #034f00;
+}
+
+QDialog#settingsDialog QPushButton#AddButton:pressed {
+    background-color:  #076803;
 }

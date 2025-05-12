@@ -12,6 +12,8 @@
 #include <QGraphicsOpacityEffect>
 #include <QMessageBox>
 #include <QDir>
+#include <math.h>
+using namespace std;
 
 AutoCompleteApp::AutoCompleteApp(Model *m, QWidget *parent)
     : QMainWindow(parent)
@@ -103,10 +105,11 @@ void AutoCompleteApp::setupUI()
     suggestionContainer->setObjectName("suggestionContainer");
     suggestionContainer->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
 
-    QHBoxLayout *suggestionsLayout = new QHBoxLayout(suggestionContainer);
-    suggestionsLayout->setContentsMargins(4, 4, 4, 4);
-    suggestionsLayout->setSpacing(4);
-    suggestionsLayout->setAlignment(Qt::AlignVCenter);
+    QGridLayout* suggestionsLayout = new QGridLayout(suggestionContainer);
+    suggestionsLayout->setContentsMargins(10, 10, 10, 10);
+    suggestionsLayout->setHorizontalSpacing(8);
+    suggestionsLayout->setVerticalSpacing(8);
+    suggestionsLayout->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
 
     contentLayout->addWidget(suggestionContainer);
 
@@ -279,7 +282,8 @@ void AutoCompleteApp::updateSuggestions()
     clearSelection();
     suggestionButtons.clear();
     QLayoutItem* child;
-    while ((child = suggestionContainer->layout()->takeAt(0)) != nullptr) {
+    QGridLayout* layout = qobject_cast<QGridLayout*>(suggestionContainer->layout());
+    while ((child = layout->takeAt(0)) != nullptr) {
         delete child->widget();
         delete child;
     }
@@ -303,8 +307,15 @@ void AutoCompleteApp::updateSuggestions()
         useFreq,
         maxSuggestions);
 
-    QHBoxLayout *layout = qobject_cast<QHBoxLayout*>(suggestionContainer->layout());
-    layout->addStretch();
+    // Calculate optimal grid layout
+    int availableWidth = suggestionContainer->width() - 20; // Account for container margins
+    int maxButtonsPerRow = max(5, maxSuggestions/2); // Default value
+
+           // Calculate maximum number of buttons to fit in a row
+    const int avgButtonWidth = 120; // Average button width estimation
+
+    int row = 0;
+    int col = 0;
 
     for (const auto &suggestion : suggestions) {
         QString QSug = QString::fromStdString(suggestion);
@@ -334,11 +345,15 @@ void AutoCompleteApp::updateSuggestions()
             replaceCurrentWord(displayText);
         });
 
-        layout->addWidget(btn);
+        layout->addWidget(btn, row, col);
         suggestionButtons.append(btn);
-    }
 
-    layout->addStretch();
+        if (++col >= maxButtonsPerRow)
+        {
+            col = 0;
+            row++;
+        }
+    }
 
     if(!suggestionButtons.isEmpty()) {
         selectedIndex = 0;
@@ -392,8 +407,10 @@ void AutoCompleteApp::handleNavigationKeys(QKeyEvent *event)
 
 void AutoCompleteApp::closeEvent(QCloseEvent *event) {
     // Create a message box with custom buttons
+    QSettings settings;
     if (!trie->changed) {
         event->accept();
+        settings.clear();
         return;
     }
 
@@ -412,8 +429,10 @@ void AutoCompleteApp::closeEvent(QCloseEvent *event) {
     if (msgBox.clickedButton() == saveButton) {
         saveJson();
         event->accept();  // Close the window
+        settings.clear();
     } else if (msgBox.clickedButton() == discardButton) {
         event->accept();  // Close without saving
+        settings.clear();
     } else if (msgBox.clickedButton() == cancelButton) {
         event->ignore();   // Cancel closing
     }

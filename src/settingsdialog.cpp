@@ -5,37 +5,51 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QMessageBox>
+#include <QFile>
+#include <QDir>
+#include <QCoreApplication>
 
 SettingsDialog::SettingsDialog(Trie* t,QWidget *parent)
     : QDialog(parent), trie(t)
 {
     setWindowTitle("Preferences");
+
+    QString baseDir = QCoreApplication::applicationDirPath();
+    QString srcPath = QDir(baseDir + "/../../src").absolutePath();
+    QFile styleFile(srcPath+"/Style.css");
+    if (styleFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QString styleSheet = QLatin1String(styleFile.readAll());
+        setStyleSheet(styleSheet);
+        styleFile.close();
+    }
+    this->setObjectName("settingsDialog");
+
     setupUI();
-    searchMethodCombo->setCurrentIndex(0);
-    maxSuggestionsSlider->setValue(4);
-    freq->setChecked(true);
-    suggestionCountLabel->setText("4");
+    loadSettings();
 }
 
 void SettingsDialog::setupUI() {
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
 
-    // Search Method Selection
+           // Search Method Selection
     QHBoxLayout *methodLayout = new QHBoxLayout();
     QLabel *methodLabel = new QLabel("Search Method:");
     searchMethodCombo = new QComboBox();
-    searchMethodCombo->addItem("BFS (Breadth-First Search)", QVariant(true));
     searchMethodCombo->addItem("DFS (Depth-First Search)", QVariant(false));
-    searchMethodCombo->setToolTip("BFS: Suggests words by popularity\nDFS: Suggests words alphabetically");
+    searchMethodCombo->addItem("BFS (Breadth-First Search)", QVariant(true));
+    searchMethodCombo->setToolTip("DFS: Suggests words alphabetically\nBFS: Suggests words by popularity");
     freq = new QCheckBox("Use Frequency Sorting");
     freq->setToolTip("Prioritize suggestions based on word usage frequency");
-    
+    highlight = new QCheckBox("Highlight first suggestion");
+    highlight->setToolTip("Select the first suggestion by default");
+
     methodLayout->addWidget(methodLabel);
     methodLayout->addWidget(searchMethodCombo);
     mainLayout->addLayout(methodLayout);
     mainLayout->addWidget(freq);
+    mainLayout->addWidget(highlight);
 
-    // Suggestions Slider
+           // Suggestions Slider
     QHBoxLayout *sliderLayout = new QHBoxLayout();
     QLabel *sliderLabel = new QLabel("Max Suggestions:");
     sliderLabel->setProperty("sliderLabel", true);
@@ -58,19 +72,20 @@ void SettingsDialog::setupUI() {
     wordInput->setPlaceholderText("Enter word");
 
     addButton = new QPushButton("Add Word");
+    addButton->setObjectName("AddButton");
     deleteButton = new QPushButton("Delete Word");
+    deleteButton->setObjectName("deleteButton");
 
     wordLayout->addWidget(wordInput);
     wordLayout->addWidget(addButton);
     wordLayout->addWidget(deleteButton);
 
-    mainLayout->insertLayout(2, wordLayout);
+    mainLayout->insertLayout(3, wordLayout);
 
-    // Buttons
     QHBoxLayout *buttonLayout = new QHBoxLayout();
     QPushButton *saveButton = new QPushButton("Save");
     QPushButton *resetButton = new QPushButton("Reset to Defaults");
-    
+
     connect(maxSuggestionsSlider, &QSlider::valueChanged, this, &SettingsDialog::onSliderMoved);
     connect(saveButton, &QPushButton::clicked, this, &SettingsDialog::onSaveClicked);
     connect(resetButton, &QPushButton::clicked, this, &SettingsDialog::onResetClicked);
@@ -84,23 +99,32 @@ void SettingsDialog::setupUI() {
 
 void SettingsDialog::loadSettings() {
     bool useFrequency = settings.value("Search/UseFrequency", true).toBool();
-    freq->setChecked(useFrequency);
-    bool bfs = settings.value("Search/BFS", true).toBool();
+    bool highlightFirst = settings.value("Suggestions/Highlight", true).toBool();
+    bool bfs = settings.value("Search/BFS", false).toBool();
     int maxSuggestions = settings.value("Suggestions/Max", 4).toInt();
-    
-    searchMethodCombo->setCurrentIndex(bfs ? 0 : 1);
+
+    freq->setChecked(useFrequency);
+    highlight->setChecked(highlightFirst);
+    searchMethodCombo->setCurrentIndex(bfs ? 1 : 0);
     maxSuggestionsSlider->setValue(maxSuggestions);
+    suggestionCountLabel->setText(QString::number(maxSuggestions));
 }
 
 void SettingsDialog::onSaveClicked() {
+    settings.setValue("Search/BFS", searchMethodCombo->currentData().toBool());
+    settings.setValue("Suggestions/Highlight", highlight->isChecked());
+    settings.setValue("Suggestions/Max", maxSuggestionsSlider->value());
+    settings.setValue("Search/UseFrequency", freq->isChecked());
     emit settingsChanged(searchMethodCombo->currentData().toBool(),
                          maxSuggestionsSlider->value(),
-                         freq->isChecked());
+                         freq->isChecked(),
+                         highlight->isChecked());
     accept();
 }
 
 void SettingsDialog::onResetClicked() {
     freq->setChecked(true);
+    highlight->setChecked(true);
     searchMethodCombo->setCurrentIndex(0);
     maxSuggestionsSlider->setValue(4);
 }

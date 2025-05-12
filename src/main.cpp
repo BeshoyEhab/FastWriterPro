@@ -2,10 +2,12 @@
 #include <QScreen>
 #include <QDir>
 #include "autocompleteapp.h"
+#include <QStyleFactory>
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+    app.setStyle(QStyleFactory::create("Fusion"));
     Model *model = new Model;
     AutoCompleteApp window(model);
     QString baseDir = QCoreApplication::applicationDirPath();
