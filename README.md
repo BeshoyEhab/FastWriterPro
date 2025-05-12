@@ -82,22 +82,30 @@ FastWriterPro uses a custom Trie data structure to efficiently store and retriev
 
 ```
 .
-├── src/                  # Source files
-│   ├── autocompleteapp.cpp  # Main application window
-│   ├── inputfield.cpp    # Custom input field widget
-│   ├── hoverablebutton.cpp  # Interactive button component
-│   ├── trie.cpp          # Trie data structure implementation
-│   ├── trienode.cpp      # Trie node implementation
-│   ├── settingsdialog.cpp  # Preferences dialog
-│   └── main.cpp          # Application entry point
-├── headers/              # Header files
-├── assets/               # Resources
-│   ├── Style.css         # Application styling
-│   └── words_dictionary.json  # Default dictionary
-├── data_model/           # Data handling
-│   ├── model.cpp         # Dictionary file operations
-│   └── model.h           # Model header
-└── CMakeLists.txt        # CMake build configuration
+├── src/                      # Source files
+│   ├── autocompleteapp.cpp   # Main application window
+│   ├── inputfield.cpp        # Custom input field widget
+│   ├── hoverablebutton.cpp   # Interactive button component
+│   ├── trie.cpp              # Trie data structure implementation
+│   ├── trienode.cpp          # Trie node implementation
+│   ├── settingsdialog.cpp    # Preferences dialog
+│   └── main.cpp              # Application entry point
+├── headers/                  # Header files
+│   ├── autocompleteapp.h     # Main application window
+│   ├── inputfield.h          # Custom input field widget
+│   ├── hoverablebutton.h     # Interactive button component
+│   ├── trie.h                # Trie data structure implementation
+│   ├── trienode.h            # Trie node implementation
+│   ├── settingsdialog.h      # Preferences dialog
+│   └── main.h                # Application entry point
+├── assets/                   # Resources
+│   ├── Style.css             # Application styling
+│   ├── json.hpp              # nolhmann json library
+│   └── words_dictionary.json # Default dictionary
+├── data_model/               # Data handling
+│   ├── model.cpp             # Dictionary file operations
+│   └── model.h               # Model header
+└── CMakeLists.txt            # CMake build configuration
 ```
 
 ## Contributing
