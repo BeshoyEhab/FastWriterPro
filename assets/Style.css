@@ -188,7 +188,7 @@ QDialog#settingsDialog QComboBox {
 
 /* Dropdown list container */
 QDialog#settingsDialog QComboBox QAbstractItemView {
-    background-color: #313131;
+    background-color: #515151;
     color: #ffffff;
     border: 1px solid #5f5f5f;
     border-radius: 8px;  /* Container rounded corners */
@@ -197,7 +197,7 @@ QDialog#settingsDialog QComboBox QAbstractItemView {
 
 /* Individual items */
 QDialog#settingsDialog QComboBox QAbstractItemView::item {
-    background-color: #313131;
+    background-color: #515151;
     color: #ffffff;
     border-radius: 6px;
     margin: 2px 4px;
@@ -205,7 +205,7 @@ QDialog#settingsDialog QComboBox QAbstractItemView::item {
 
 /* Selected item */
 QDialog#settingsDialog QComboBox QAbstractItemView::item:selected {
-    background-color: #b6b6b6;
+    background-color: #6b6b6b;
     border-radius: 6px;
 }
 
@@ -240,16 +240,14 @@ QDialog#settingsDialog QCheckBox::indicator:unchecked {
 /*==========================*/
 
 QDialog#settingsDialog QPushButton#deleteButton {
-    background-color: #782b2c;
+    background-color: #d32f2f;
     color: #ffffff;
-    font-weight: bold;
-    border: 1px solid #782b2c;
+    border: 1px solid #b71c1c;
 }
 
 QDialog#settingsDialog QPushButton#deleteButton:hover {
-    background-color: #ae3335;
+    background-color: #b71c1c;
     color: #ffffff;
-    font-weight: bold;
     border: 1px solid #8a1c1c;
 }
 
@@ -260,17 +258,17 @@ QDialog#settingsDialog QPushButton#deleteButton:pressed {
 /*-----------------------------*/
 
 QDialog#settingsDialog QPushButton#AddButton {
-    background-color: #2b782c;
+    background-color: #0da107  ;
     color: #ffffff;
     border: 1px solid #034f00;
 }
 
 QDialog#settingsDialog QPushButton#AddButton:hover {
-    background-color: #33ae35;
+    background-color: #098004 ;
     color: #ffffff;
     border: 1px solid #034f00;
 }
 
 QDialog#settingsDialog QPushButton#AddButton:pressed {
-    background-color:  #076803;
+    background-color:  #076803 ;
 }

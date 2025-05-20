@@ -40,16 +40,12 @@ void SettingsDialog::setupUI() {
     searchMethodCombo->setToolTip("DFS: Suggests words alphabetically\nBFS: Suggests words by popularity");
     freq = new QCheckBox("Use Frequency Sorting");
     freq->setToolTip("Prioritize suggestions based on word usage frequency");
-    highlight = new QCheckBox("Highlight first suggestion");
-    highlight->setToolTip("Select the first suggestion by default");
 
     methodLayout->addWidget(methodLabel);
     methodLayout->addWidget(searchMethodCombo);
     mainLayout->addLayout(methodLayout);
     mainLayout->addWidget(freq);
-    mainLayout->addWidget(highlight);
 
-           // Suggestions Slider
     QHBoxLayout *sliderLayout = new QHBoxLayout();
     QLabel *sliderLabel = new QLabel("Max Suggestions:");
     sliderLabel->setProperty("sliderLabel", true);
@@ -99,12 +95,10 @@ void SettingsDialog::setupUI() {
 
 void SettingsDialog::loadSettings() {
     bool useFrequency = settings.value("Search/UseFrequency", true).toBool();
-    bool highlightFirst = settings.value("Suggestions/Highlight", true).toBool();
     bool bfs = settings.value("Search/BFS", false).toBool();
     int maxSuggestions = settings.value("Suggestions/Max", 4).toInt();
 
     freq->setChecked(useFrequency);
-    highlight->setChecked(highlightFirst);
     searchMethodCombo->setCurrentIndex(bfs ? 1 : 0);
     maxSuggestionsSlider->setValue(maxSuggestions);
     suggestionCountLabel->setText(QString::number(maxSuggestions));
@@ -112,19 +106,16 @@ void SettingsDialog::loadSettings() {
 
 void SettingsDialog::onSaveClicked() {
     settings.setValue("Search/BFS", searchMethodCombo->currentData().toBool());
-    settings.setValue("Suggestions/Highlight", highlight->isChecked());
     settings.setValue("Suggestions/Max", maxSuggestionsSlider->value());
     settings.setValue("Search/UseFrequency", freq->isChecked());
     emit settingsChanged(searchMethodCombo->currentData().toBool(),
                          maxSuggestionsSlider->value(),
-                         freq->isChecked(),
-                         highlight->isChecked());
+                         freq->isChecked());
     accept();
 }
 
 void SettingsDialog::onResetClicked() {
     freq->setChecked(true);
-    highlight->setChecked(true);
     searchMethodCombo->setCurrentIndex(0);
     maxSuggestionsSlider->setValue(4);
 }

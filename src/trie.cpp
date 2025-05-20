@@ -12,6 +12,8 @@ void Trie::insert(const std::string& word, int frequency) {
         node = node->children[c];
     }
     changed = true;
+    if (node->frequency < 0)
+        node->frequency = 0;
     node->frequency += frequency;
 }
 
@@ -45,7 +47,7 @@ void Trie::addNew(std::string s)
 
 std::vector<std::string> Trie::autoComplete(const std::string& prefix, bool bfs, bool usefreq, int max_suggestions) {
     if (prefix.empty())
-        return {};
+        return {prefix};
     TrieNode* node = root;
     for (char c : prefix) {
         auto it = node->children.find(c);
@@ -62,9 +64,13 @@ std::vector<std::string> Trie::autoComplete(const std::string& prefix, bool bfs,
 
     std::vector<std::string> result;
     while (!pq.empty()) {
-        result.insert(result.begin(), pq.top().first);
+        if (pq.top().first != prefix)
+            result.insert(result.begin(), pq.top().first);
         pq.pop();
     }
+    if (result.size() == max_suggestions)
+        result.pop_back();
+    result.insert(result.begin(), prefix);
     return result;
 }
 
@@ -102,7 +108,7 @@ void Trie::makeJson(json &outJson)
 void Trie::collectJsonEntries(TrieNode *node, std::string &currentWord, json& j) {
     if (node == nullptr) return;
 
-    if (node->frequency > 0) {
+    if (node->frequency >= 0) {
         j[currentWord] = node->frequency;
     }
 

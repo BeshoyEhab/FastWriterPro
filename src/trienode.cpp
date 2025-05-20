@@ -1,4 +1,4 @@
 #include "trienode.h"
 TrieNode::TrieNode() {
-    frequency = 0;
+    frequency = -1;
 }

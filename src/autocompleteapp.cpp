@@ -125,22 +125,17 @@ void AutoCompleteApp::setupUI()
     // Initialize animation group pointer
     currentAnimGroup = nullptr;
 
-    // Add suggestion container to wrapper
     suggestionsWrapperLayout->addWidget(suggestionContainer);
 
-    // Input Field
     inputField = new InputField();
     inputField->setObjectName("inputField");
     inputField->setPlaceholderText("Start typing Here");
 
-    // Create the main content stack in correct order
     contentLayout->addWidget(suggestionsWrapper);
     contentLayout->addWidget(inputField);
 
-    // Hide suggestions initially
     suggestionContainer->hide();
 
-    // Center the content widget horizontally
     QHBoxLayout *horizontalWrapper = new QHBoxLayout();
     horizontalWrapper->addStretch();
     horizontalWrapper->addWidget(contentWidget, 8);
@@ -148,7 +143,6 @@ void AutoCompleteApp::setupUI()
 
     mainLayout->addLayout(horizontalWrapper);
 
-    // Add stretch after content for vertical centering
     mainLayout->addStretch(1);
 
     connect(this, &AutoCompleteApp::suggestionsVisibilityChanged, 
@@ -222,8 +216,8 @@ void AutoCompleteApp::updateSelection()
 {
     for(int i = 0; i < suggestionButtons.size(); i++) {
         suggestionButtons[i]->setStyleSheet((i == selectedIndex) ?
-            "background-color: #9d9d9d; color: #ffffff; border-radius: 20px;" :
-            "background-color: #21262d; color: rgba(255, 255, 255, 0.9); border-radius: 20px;");
+                                                "background-color:#e1e1e1; color:rgb(27, 27, 27) ; border-radius: 10px;":
+                                                "background-color:#262626; color: rgba(255, 255, 255, 0.9); border-radius: 10px;");
     }
 }
 
@@ -307,12 +301,9 @@ void AutoCompleteApp::updateSuggestions()
         useFreq,
         maxSuggestions);
 
-    // Calculate optimal grid layout
-    int availableWidth = suggestionContainer->width() - 20; // Account for container margins
-    int maxButtonsPerRow = max(5, maxSuggestions/2); // Default value
+    int maxButtonsPerRow = max(5, maxSuggestions/2);
 
-           // Calculate maximum number of buttons to fit in a row
-    const int avgButtonWidth = 120; // Average button width estimation
+    const int avgButtonWidth = 120;
 
     int row = 0;
     int col = 0;
@@ -334,11 +325,9 @@ void AutoCompleteApp::updateSuggestions()
         btn->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
         btn->setMinimumHeight(26);
 
-        // Calculate the width needed for the text
         QFontMetrics fm(btn->font());
         int textWidth = fm.horizontalAdvance(displayText);
-        // Add padding (16px on each side from the stylesheet + 5px extra on each side)
-        int totalWidth = textWidth + 42;  // 16px + 5px padding on each side
+        int totalWidth = textWidth + 42;
         btn->setMinimumWidth(totalWidth);
 
         connect(btn, &QPushButton::clicked, [this, displayText]() {
