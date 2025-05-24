@@ -42,7 +42,7 @@ void Model::saveJson(const QString &fileName) {
 
     QFile file(fileName);
     if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-        std::string jsonStr = data.dump(4); // Pretty print with 4 spaces
+        std::string jsonStr = data.dump(4);
         file.write(jsonStr.c_str(), jsonStr.size());
         file.close();
     }
