@@ -23,7 +23,27 @@ AutoCompleteApp::AutoCompleteApp(Model *m, QWidget *parent)
     , useBFS(true)
     , maxSuggestions(4)
     , useFreq(true)
+    , isDeletingText(false)
+    , isThrottling(false)
 {
+    // Initialize debounce timer
+    debounceTimer = new QTimer(this);
+    debounceTimer->setSingleShot(true);
+    debounceTimer->setInterval(100); // 100ms debounce delay for better responsiveness
+    connect(debounceTimer, &QTimer::timeout, [this]() {
+        isDeletingText = false;
+        updateSuggestions();
+    });
+    
+    // Initialize throttle timer for held keys
+    throttleTimer = new QTimer(this);
+    throttleTimer->setSingleShot(false);
+    throttleTimer->setInterval(150); // 150ms throttle interval for held keys
+    connect(throttleTimer, &QTimer::timeout, [this]() {
+        if (isDeletingText) {
+            updateSuggestions();
+        }
+    });
     QString baseDir = QCoreApplication::applicationDirPath();
     QString assetPath = QDir(baseDir + "/../assets").absolutePath();
     QString assetsPath = QDir(assetPath + "/../../assets").absolutePath();
@@ -49,8 +69,25 @@ AutoCompleteApp::AutoCompleteApp(Model *m, QWidget *parent)
 }
 
 void AutoCompleteApp::keyPressEvent(QKeyEvent *event) {
-    if (event->key() == Qt::Key_Backspace) {
-        isBackspace = true;
+    if (event->key() == Qt::Key_Backspace || event->key() == Qt::Key_Delete) {
+        isBackspace = (event->key() == Qt::Key_Backspace);
+        isDeletingText = true;
+        
+        if (event->isAutoRepeat()) {
+            // For held keys, use throttling instead of debouncing
+            if (!isThrottling) {
+                isThrottling = true;
+                throttleTimer->start();
+                updateSuggestions(); // First update immediately
+            }
+            debounceTimer->stop();
+        } else {
+            // For single presses, stop throttling and use debouncing
+            throttleTimer->stop();
+            isThrottling = false;
+            debounceTimer->stop();
+            debounceTimer->setInterval(100);
+        }
     } else {
         handleNavigationKeys(event);
     }
@@ -58,9 +95,21 @@ void AutoCompleteApp::keyPressEvent(QKeyEvent *event) {
 }
 
 void AutoCompleteApp::keyReleaseEvent(QKeyEvent *event) {
-    if (event->key() == Qt::Key_Backspace) {
+    if (event->key() == Qt::Key_Backspace || event->key() == Qt::Key_Delete) {
         isBackspace = false;
-        updateUI();
+        
+        // Stop throttling when key is released
+        if (isThrottling) {
+            throttleTimer->stop();
+            isThrottling = false;
+        }
+        
+        // Start debounce timer for final update
+        if (!event->isAutoRepeat()) {
+            debounceTimer->start();
+        }
+        
+        updateInputHeight(); // Still update height immediately
     }
     QMainWindow::keyReleaseEvent(event);
 }
@@ -231,7 +280,7 @@ void AutoCompleteApp::activateSelected()
 void AutoCompleteApp::updateUI()
 {
     updateInputHeight();
-    if (!isBackspace)
+    if (!isDeletingText)
         updateSuggestions();
 }
 

@@ -5,6 +5,7 @@
 #include <QPropertyAnimation>
 #include <QGraphicsOpacityEffect>
 #include <QParallelAnimationGroup>
+#include <QTimer>
 #include "../data_model/model.h"
 
 class InputField;
@@ -29,6 +30,10 @@ private:
     int maxSuggestions = 4;
     bool isBackspace;
     bool useFreq = true;
+    bool isDeletingText;
+    QTimer *debounceTimer;
+    QTimer *throttleTimer;
+    bool isThrottling;
     Model *model;
     InputField *inputField;
     QWidget *suggestionContainer;

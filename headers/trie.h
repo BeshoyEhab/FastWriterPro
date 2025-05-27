@@ -4,6 +4,7 @@
 #include <queue>
 #include <../assets/json.hpp>
 #include "trienode.h"
+#include <QRegularExpression>
 
 using json = nlohmann::json;
 
@@ -34,9 +35,11 @@ private:
                       std::priority_queue<std::pair<std::string, int>,
                                           std::vector<std::pair<std::string, int>>,
                                           Comparator>& pq,
-                      const std::string& prefix, int max_suggestions);
+                      const std::string& prefix, const std::string& regex, int max_suggestions);
     void collectJsonEntries(TrieNode *node, std::string &currentWord, json &j);
     void resetEntries(TrieNode *node, std::string &currentWord);
+    bool isValidRegex(const std::string& word, const std::string& pattern);
+    QString convertToRegex(const QString& pattern);
 
 public:
     Trie();

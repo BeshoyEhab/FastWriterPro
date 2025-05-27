@@ -45,9 +45,27 @@ void Trie::addNew(std::string s)
         newWords[s] = 1;
 }
 
-std::vector<std::string> Trie::autoComplete(const std::string& prefix, bool bfs, bool usefreq, int max_suggestions) {
-    if (prefix.empty())
-        return {prefix};
+std::vector<std::string> Trie::autoComplete(const std::string& regex, bool bfs, bool usefreq, int max_suggestions) {
+    if (regex.empty())
+        return {regex};
+    
+    std::string actualRegex = regex;
+    bool hasRegexChars = false;
+    for (char c : regex) {
+        if (c == '.' || c == '*') {
+            hasRegexChars = true;
+            break;
+        }
+    }
+    if (!hasRegexChars) {
+        actualRegex += "*";
+    }
+    
+    std::string prefix;
+    for (char c : actualRegex) {
+        if (c == '.' || c == '*') break;
+        prefix += c;
+    }
     TrieNode* node = root;
     for (char c : prefix) {
         auto it = node->children.find(c);
@@ -60,17 +78,37 @@ std::vector<std::string> Trie::autoComplete(const std::string& prefix, bool bfs,
                         Comparator>
         pq((Comparator(bfs, usefreq)));
     std::string currentSuffix;
-    collectWords(node, currentSuffix, pq, prefix, max_suggestions);
+    collectWords(node, currentSuffix, pq, prefix, actualRegex, max_suggestions);
 
     std::vector<std::string> result;
     while (!pq.empty()) {
-        if (pq.top().first != prefix)
-            result.insert(result.begin(), pq.top().first);
+        result.insert(result.begin(), pq.top().first);
         pq.pop();
     }
-    if (result.size() == max_suggestions)
-        result.pop_back();
-    result.insert(result.begin(), prefix);
+    
+    bool prefixExists = false;
+    for (const auto& word : result) {
+        if (word == prefix) {
+            prefixExists = true;
+            break;
+        }
+    }
+    
+    if (!hasRegexChars) {
+        if (!prefixExists) {
+            if (result.size() == max_suggestions)
+                result.pop_back();
+            result.insert(result.begin(), prefix);
+        }
+    }
+
+    else if (actualRegex.back() == '*') {
+        if (!prefixExists && isValidRegex(prefix, actualRegex)) {
+            if (result.size() == max_suggestions)
+                result.pop_back();
+            result.insert(result.begin(), prefix);
+        }
+    }
     return result;
 }
 
@@ -83,18 +121,17 @@ void Trie::collectWords(
         Comparator
         >& pq,
     const std::string& prefix,
+    const std::string& regex,
     int max_suggestions
     ) {
-    if (node->frequency > 0) {
+    if (node->frequency > 0 && isValidRegex(prefix+currentSuffix, regex)) {
         pq.emplace(prefix + currentSuffix, node->frequency);
-        if (pq.size() > max_suggestions) {
-            pq.pop();
-        }
+        if (pq.size() > max_suggestions) pq.pop();
     }
 
     for (auto& kv : node->children) {
         currentSuffix.push_back(kv.first);
-        collectWords(kv.second, currentSuffix, pq, prefix, max_suggestions);
+        collectWords(kv.second, currentSuffix, pq, prefix, regex, max_suggestions);
         currentSuffix.pop_back();
     }
 }
@@ -152,4 +189,29 @@ void Trie::resetEntries(TrieNode *node, std::string &currentWord)
         resetEntries(pair.second, currentWord);
         currentWord.pop_back();
     }
+}
+
+QString Trie::convertToRegex(const QString& pattern) {
+    QString regexPattern;
+    for (const QChar& c : pattern) {
+        if (c == '.') {
+            regexPattern += ".";
+        } else if (c == '*') {
+            regexPattern += ".*";
+        } else {
+            regexPattern += QRegularExpression::escape(QString(c));
+        }
+    }
+    return "^" + regexPattern + "$";
+}
+
+bool Trie::isValidRegex(const std::string& word, const std::string& pattern) {
+    QString qPattern = QString::fromStdString(pattern);
+    QString regexStr = convertToRegex(qPattern);
+    QRegularExpression regex(regexStr);
+
+    if (!regex.isValid()) return false;
+
+    QRegularExpressionMatch match = regex.match(QString::fromStdString(word));
+    return match.hasMatch();
 }

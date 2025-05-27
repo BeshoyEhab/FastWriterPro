@@ -30,8 +30,6 @@ SettingsDialog::SettingsDialog(Trie* t,QWidget *parent)
 
 void SettingsDialog::setupUI() {
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
-
-           // Search Method Selection
     QHBoxLayout *methodLayout = new QHBoxLayout();
     QLabel *methodLabel = new QLabel("Search Method:");
     searchMethodCombo = new QComboBox();
